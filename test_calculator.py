@@ -1,7 +1,7 @@
 # test_calculator.py
 
 import pytest
-from calculator import add, subtract, multiply, divide,power
+from calculator import add, subtract, multiply, divide, power
 
 
 @pytest.mark.edge
@@ -45,3 +45,4 @@ def test_power():
     assert power(2, 3) == 8
     assert power(5, 0) == 1
     assert power(3, 2) == 9
+    
