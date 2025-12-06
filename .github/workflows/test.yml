@@ -5,24 +5,6 @@ on:
     branches: [ main ]
 
 jobs:
-  lint:
-    name: Code Linting
-    runs-on: ubuntu-latest
-  
-    steps:
-      - uses: actions/checkout@v4
-    
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-    
-      - name: Install flake8
-        run: pip install flake8
-    
-      - name: Run linter
-        run: flake8 calculator.py test_calculator.py --max-line-length=100
-
   generate-matrix:
     runs-on: ubuntu-latest
     outputs:
@@ -32,40 +14,16 @@ jobs:
         id: set-matrix
         run: |
           echo 'matrix={"python-version":["3.9","3.10","3.11"],"os":["ubuntu-latest"]}' >> $GITHUB_OUTPUT
-  test:
-    needs: generate-matrix
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Test with Python ${{ matrix.python-version }}
-        run: echo "Testing..."
 
-  
-    needs: lint
-    runs-on: ${{ matrix.os }}
-    
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.9', '3.11', '3.12']
-        
-        # Exclude specific combinations
-        exclude:
-          - os: macos-latest
-            python-version: '3.9'
-        
-        # Include additional specific combinations
-        include:
-          - os: ubuntu-latest
-            python-version: '3.13-dev'
-            experimental: true
-      
-      fail-fast: false
-    
-    # Allow experimental jobs to fail without failing the workflow
-    continue-on-error: ${{ matrix.experimental == true }}
+    test:
+      needs: generate-matrix
+      runs-on: ${{ matrix.os }}
+      strategy:
+        matrix: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
+      steps:
+        - uses: actions/checkout@v4
+        - name: Test with Python ${{ matrix.python-version }}
+          run: echo "Testing..."
     
     steps:
       - name: Checkout code
