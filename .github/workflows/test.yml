@@ -23,6 +23,25 @@ jobs:
       - name: Run linter
         run: flake8 calculator.py test_calculator.py --max-line-length=100
 
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Generate matrix
+        id: set-matrix
+        run: |
+          echo 'matrix={"python-version":["3.9","3.10","3.11"],"os":["ubuntu-latest"]}' >> $GITHUB_OUTPUT
+  test:
+    needs: generate-matrix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test with Python ${{ matrix.python-version }}
+        run: echo "Testing..."
+        
   test:
     needs: lint
     runs-on: ${{ matrix.os }}
