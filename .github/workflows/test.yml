@@ -25,7 +25,7 @@ jobs:
         - name: Test with Python ${{ matrix.python-version }}
           run: echo "Testing..."
     
-    steps:
+  steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
